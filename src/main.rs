@@ -5,6 +5,7 @@ use std::io::ErrorKind;
 use std::io::{stderr, stdout, Write};
 use std::process::ExitCode;
 
+#[derive(Debug)]
 enum CcOptions {
     Bytes,
     Words,
@@ -14,11 +15,9 @@ enum CcOptions {
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().collect();
-    if args.len() < 3 {
-        return output("Insufficient arguments", 1);
-    }
-    let options = parse_options(&args[1]);
-    let file_path = &args[2];
+    let args = parse_arguments(&args);
+    let options = args.0;
+    let file_path = args.1;
     match File::open(&file_path) {
         Ok(mut file) => {
             let mut contents = String::new();
@@ -56,8 +55,8 @@ fn count_bytes(contents: &String) -> usize {
 }
 
 fn count_lines(contents: &String) -> usize {
-    let x: Vec<&str> = contents.lines().collect();
-    x.len()
+    let lines: Vec<&str> = contents.lines().collect();
+    lines.len()
 }
 
 fn count_characters(contents: &String) -> usize {
@@ -68,19 +67,29 @@ fn count_words(contents: &String) -> usize {
     contents.split_whitespace().count()
 }
 
-fn parse_options(options: &String) -> Vec<CcOptions> {
-    let options: Vec<&str> = options.split("").collect();
-    let mut cc_options: Vec<CcOptions> = vec![];
-    for i in options.iter() {
-        match i.to_lowercase().as_str() {
-            "c" => cc_options.push(CcOptions::Bytes),
-            "w" => cc_options.push(CcOptions::Words),
-            "l" => cc_options.push(CcOptions::Lines),
-            "m" => cc_options.push(CcOptions::Characters),
-            _ => {}
-        }
+fn parse_arguments(args: &Vec<String>) -> (Vec<CcOptions>, &String) {
+    if args[1].starts_with("-") {
+        return (parse_options(&args[1]), &args[2]);
     }
-    cc_options
+    return (parse_options(&String::new()), &args[1]);
+}
+
+fn parse_options(options: &String) -> Vec<CcOptions> {
+    if options.trim().len() > 0 {
+        let options: Vec<&str> = options.trim().split("").collect();
+        let mut cc_options: Vec<CcOptions> = vec![];
+        for i in options.iter() {
+            match i.to_lowercase().as_str() {
+                "c" => cc_options.push(CcOptions::Bytes),
+                "w" => cc_options.push(CcOptions::Words),
+                "l" => cc_options.push(CcOptions::Lines),
+                "m" => cc_options.push(CcOptions::Characters),
+                _ => {}
+            }
+        }
+        return cc_options;
+    }
+    return vec![CcOptions::Bytes, CcOptions::Lines, CcOptions::Words];
 }
 
 fn handle_file_error(error: ErrorKind) -> ExitCode {
