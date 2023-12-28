@@ -29,7 +29,7 @@ fn generate_report_from_file(file_path: &String, options: &String) -> ExitCode {
         Ok(content) => {
             let report = CcReport {
                 content: &content,
-                options: &parse_options(options),
+                options: &CcOptionsBuilder { raw: options },
             };
             return output(&report.count_string(), 0);
         }
@@ -39,10 +39,9 @@ fn generate_report_from_file(file_path: &String, options: &String) -> ExitCode {
 
 fn generate_report_from_stdin(options: &String) -> ExitCode {
     let content = get_content_from_stdin();
-    let options = parse_options(options);
     let report = CcReport {
         content: &content,
-        options: &options,
+        options: &CcOptionsBuilder { raw: options },
     };
     return output(&report.count_string(), 0);
 }
@@ -66,24 +65,6 @@ fn get_content_from_stdin() -> String {
         content.push('\n');
     }
     content
-}
-
-fn parse_options(options: &String) -> Vec<CcOptions> {
-    if options.trim().len() > 0 {
-        let options: Vec<&str> = options.trim().split("").collect();
-        let mut cc_options: Vec<CcOptions> = vec![];
-        for i in options.iter() {
-            match i.to_lowercase().as_str() {
-                "c" => cc_options.push(CcOptions::Bytes),
-                "w" => cc_options.push(CcOptions::Words),
-                "l" => cc_options.push(CcOptions::Lines),
-                "m" => cc_options.push(CcOptions::Characters),
-                _ => {}
-            }
-        }
-        return cc_options;
-    }
-    return vec![CcOptions::Bytes, CcOptions::Lines, CcOptions::Words];
 }
 
 fn handle_file_error(error: ErrorKind) -> ExitCode {

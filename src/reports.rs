@@ -1,15 +1,15 @@
 pub mod report {
-    use super::super::options::option::CcOptions;
+    use super::super::options::option::{CcOptions, CcOptionsBuilder};
 
     pub struct CcReport<'a> {
-        pub options: &'a Vec<CcOptions>,
         pub content: &'a String,
+        pub options: &'a CcOptionsBuilder<'a>,
     }
 
     impl<'a> CcReport<'a> {
         pub fn count(&self) -> Vec<(usize, CcOptions)> {
             let mut result: Vec<(usize, CcOptions)> = vec![];
-            for option in self.options.iter() {
+            for option in self.options.encode().iter() {
                 match option {
                     CcOptions::Bytes => result.push((self.content.len(), CcOptions::Bytes)),
                     CcOptions::Characters => {
