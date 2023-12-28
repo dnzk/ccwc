@@ -29,7 +29,7 @@ fn generate_report_from_file(file_path: &String, options: &String) -> ExitCode {
         Ok(content) => {
             let report = CcReport {
                 content: &content,
-                options: &CcOptionsBuilder { raw: options },
+                options: &CcOptions { raw: options },
             };
             return output(&report.count_string(), 0);
         }
@@ -41,7 +41,7 @@ fn generate_report_from_stdin(options: &String) -> ExitCode {
     let content = get_content_from_stdin();
     let report = CcReport {
         content: &content,
-        options: &CcOptionsBuilder { raw: options },
+        options: &CcOptions { raw: options },
     };
     return output(&report.count_string(), 0);
 }

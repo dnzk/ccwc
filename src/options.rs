@@ -4,34 +4,38 @@ pub mod option {
     const M: &str = "m";
     const W: &str = "w";
 
-    pub enum CcOptions {
+    pub enum CcOptionsType {
         Bytes,
         Characters,
         Lines,
         Words,
     }
 
-    pub struct CcOptionsBuilder<'a> {
+    pub struct CcOptions<'a> {
         pub raw: &'a String,
     }
 
-    impl<'a> CcOptionsBuilder<'a> {
-        pub fn encode(&self) -> Vec<CcOptions> {
+    impl<'a> CcOptions<'a> {
+        pub fn encode(&self) -> Vec<CcOptionsType> {
             if self.raw.trim().len() > 0 && self.raw.starts_with("-") {
                 let options: Vec<&str> = self.raw.trim().split("").collect();
-                let mut cc_options: Vec<CcOptions> = vec![];
+                let mut cc_options: Vec<CcOptionsType> = vec![];
                 for o in options.iter() {
                     match o.to_lowercase().as_str() {
-                        C => cc_options.push(CcOptions::Bytes),
-                        L => cc_options.push(CcOptions::Lines),
-                        M => cc_options.push(CcOptions::Characters),
-                        W => cc_options.push(CcOptions::Words),
+                        C => cc_options.push(CcOptionsType::Bytes),
+                        L => cc_options.push(CcOptionsType::Lines),
+                        M => cc_options.push(CcOptionsType::Characters),
+                        W => cc_options.push(CcOptionsType::Words),
                         _ => {}
                     }
                 }
                 return cc_options;
             }
-            vec![CcOptions::Bytes, CcOptions::Lines, CcOptions::Words]
+            vec![
+                CcOptionsType::Bytes,
+                CcOptionsType::Lines,
+                CcOptionsType::Words,
+            ]
         }
     }
 }
