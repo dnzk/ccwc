@@ -1,17 +1,11 @@
+mod reports;
+use reports::report::*;
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{stderr, stdin, stdout, BufRead, Write};
 use std::io::{Error, ErrorKind};
 use std::process::ExitCode;
-
-#[derive(Debug)]
-enum CcOptions {
-    Bytes,
-    Words,
-    Lines,
-    Characters,
-}
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().collect();
@@ -31,8 +25,11 @@ fn main() -> ExitCode {
 fn generate_report_from_file(file_path: &String, options: &String) -> ExitCode {
     match get_content_from_file(file_path) {
         Ok(content) => {
-            let report = generate_report(&content, &parse_options(options)).join(" ");
-            return output(&report, 0);
+            let report = CcReport {
+                content: &content,
+                options: &parse_options(options),
+            };
+            return output(&report.count_string(), 0);
         }
         Err(error) => return handle_file_error(error.kind()),
     }
@@ -41,23 +38,11 @@ fn generate_report_from_file(file_path: &String, options: &String) -> ExitCode {
 fn generate_report_from_stdin(options: &String) -> ExitCode {
     let content = get_content_from_stdin();
     let options = parse_options(options);
-    let report = generate_report(&content, &options).join(" ");
-    return output(&report, 0);
-}
-
-fn generate_report(content: &String, options: &Vec<CcOptions>) -> Vec<String> {
-    let mut report: Vec<String> = vec![];
-    for option in options.iter() {
-        match option {
-            CcOptions::Lines => report.push(format!("{} lines", count_lines(&content))),
-            CcOptions::Characters => {
-                report.push(format!("{} characters", count_characters(&content)))
-            }
-            CcOptions::Words => report.push(format!("{} words", count_words(&content))),
-            CcOptions::Bytes => report.push(format!("{} bytes", count_bytes(&content))),
-        }
-    }
-    report
+    let report = CcReport {
+        content: &content,
+        options: &options,
+    };
+    return output(&report.count_string(), 0);
 }
 
 fn get_content_from_file(file_path: &String) -> Result<String, Error> {
@@ -79,23 +64,6 @@ fn get_content_from_stdin() -> String {
         content.push('\n');
     }
     content
-}
-
-fn count_bytes(contents: &String) -> usize {
-    contents.len()
-}
-
-fn count_lines(contents: &String) -> usize {
-    let lines: Vec<&str> = contents.lines().collect();
-    lines.len()
-}
-
-fn count_characters(contents: &String) -> usize {
-    contents.chars().count()
-}
-
-fn count_words(contents: &String) -> usize {
-    contents.split_whitespace().count()
 }
 
 fn parse_options(options: &String) -> Vec<CcOptions> {
