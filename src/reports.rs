@@ -1,10 +1,5 @@
 pub mod report {
-    pub enum CcOptions {
-        Bytes,
-        Characters,
-        Lines,
-        Words,
-    }
+    use super::super::options::option::CcOptions;
 
     pub struct CcReport<'a> {
         pub options: &'a Vec<CcOptions>,
@@ -32,18 +27,16 @@ pub mod report {
         }
 
         pub fn count_string(&self) -> String {
-            let mut result = String::new();
+            let mut result: Vec<String> = vec![];
             for c in self.count().iter() {
                 match c.1 {
-                    CcOptions::Bytes => result.push_str(format!("{} bytes", c.0).as_str()),
-                    CcOptions::Characters => {
-                        result.push_str(format!("{} characters", c.0).as_str())
-                    }
-                    CcOptions::Lines => result.push_str(format!("{} lines", c.0).as_str()),
-                    CcOptions::Words => result.push_str(format!("{} words", c.0).as_str()),
+                    CcOptions::Bytes => result.push(format!("{} bytes", c.0)),
+                    CcOptions::Characters => result.push(format!("{} characters", c.0)),
+                    CcOptions::Lines => result.push(format!("{} lines", c.0)),
+                    CcOptions::Words => result.push(format!("{} words", c.0)),
                 }
             }
-            result
+            result.join(" ")
         }
     }
 }
