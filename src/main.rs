@@ -1,8 +1,8 @@
 use std::env;
 use std::fs::File;
 use std::io::prelude::*;
-use std::io::ErrorKind;
-use std::io::{stderr, stdout, Write};
+use std::io::{stderr, stdin, stdout, BufRead, Write};
+use std::io::{Error, ErrorKind};
 use std::process::ExitCode;
 
 #[derive(Debug)]
@@ -15,39 +15,70 @@ enum CcOptions {
 
 fn main() -> ExitCode {
     let args: Vec<String> = env::args().collect();
-    let args = parse_arguments(&args);
-    let options = args.0;
-    let file_path = args.1;
-    match File::open(&file_path) {
-        Ok(mut file) => {
-            let mut contents = String::new();
-            file.read_to_string(&mut contents).unwrap();
-            let mut report: Vec<String> = vec![];
-            for o in options.iter() {
-                match o {
-                    CcOptions::Lines => {
-                        let result = format!("{} lines", count_lines(&contents));
-                        report.push(result);
-                    }
-                    CcOptions::Characters => {
-                        let result = format!("{} characters", count_characters(&contents));
-                        report.push(result);
-                    }
-                    CcOptions::Words => {
-                        let result = format!("{} words", count_words(&contents));
-                        report.push(result);
-                    }
-                    CcOptions::Bytes => {
-                        let result = format!("{} bytes", count_bytes(&contents));
-                        report.push(result);
-                    }
-                }
-            }
-            let report = report.join(" ");
+    if args.len() >= 3 {
+        return generate_report_from_file(&args[2], &args[1]);
+    } else if args.len() == 1 {
+        return generate_report_from_stdin(&String::new());
+    } else {
+        if args[1].starts_with("-") {
+            return generate_report_from_stdin(&args[1]);
+        } else {
+            return generate_report_from_file(&args[1], &String::new());
+        }
+    }
+}
+
+fn generate_report_from_file(file_path: &String, options: &String) -> ExitCode {
+    match get_content_from_file(file_path) {
+        Ok(content) => {
+            let report = generate_report(&content, &parse_options(options)).join(" ");
             return output(&report, 0);
         }
-        Err(error) => handle_file_error(error.kind()),
+        Err(error) => return handle_file_error(error.kind()),
     }
+}
+
+fn generate_report_from_stdin(options: &String) -> ExitCode {
+    let content = get_content_from_stdin();
+    let options = parse_options(options);
+    let report = generate_report(&content, &options).join(" ");
+    return output(&report, 0);
+}
+
+fn generate_report(content: &String, options: &Vec<CcOptions>) -> Vec<String> {
+    let mut report: Vec<String> = vec![];
+    for option in options.iter() {
+        match option {
+            CcOptions::Lines => report.push(format!("{} lines", count_lines(&content))),
+            CcOptions::Characters => {
+                report.push(format!("{} characters", count_characters(&content)))
+            }
+            CcOptions::Words => report.push(format!("{} words", count_words(&content))),
+            CcOptions::Bytes => report.push(format!("{} bytes", count_bytes(&content))),
+        }
+    }
+    report
+}
+
+fn get_content_from_file(file_path: &String) -> Result<String, Error> {
+    match File::open(file_path) {
+        Ok(mut file) => {
+            let mut content = String::new();
+            file.read_to_string(&mut content)?;
+            return Ok(content);
+        }
+        Err(error) => return Err(error),
+    }
+}
+
+fn get_content_from_stdin() -> String {
+    let stdin = stdin();
+    let mut content = String::new();
+    for line in stdin.lock().lines() {
+        content.push_str(line.unwrap().as_str());
+        content.push('\n');
+    }
+    content
 }
 
 fn count_bytes(contents: &String) -> usize {
@@ -65,13 +96,6 @@ fn count_characters(contents: &String) -> usize {
 
 fn count_words(contents: &String) -> usize {
     contents.split_whitespace().count()
-}
-
-fn parse_arguments(args: &Vec<String>) -> (Vec<CcOptions>, &String) {
-    if args[1].starts_with("-") {
-        return (parse_options(&args[1]), &args[2]);
-    }
-    return (parse_options(&String::new()), &args[1]);
 }
 
 fn parse_options(options: &String) -> Vec<CcOptions> {
