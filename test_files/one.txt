@@ -1,0 +1,6 @@
+Hi!
+This is a test file
+For the ccwc program.
+The content does not really matter,
+As long as there are words in it.
+Also, this is a good way to test things. 
