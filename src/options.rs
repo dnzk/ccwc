@@ -11,11 +11,21 @@ pub mod option {
         Words,
     }
 
-    pub struct CcOptions<'a> {
-        pub raw: &'a String,
+    pub struct CcOptions {
+        raw: String,
     }
 
-    impl<'a> CcOptions<'a> {
+    impl<'a> CcOptions {
+        pub fn from(option: String) -> CcOptions {
+            CcOptions { raw: option }
+        }
+        fn default_options() -> Vec<CcOptionsType> {
+            vec![
+                CcOptionsType::Bytes,
+                CcOptionsType::Lines,
+                CcOptionsType::Words,
+            ]
+        }
         pub fn encode(&self) -> Vec<CcOptionsType> {
             if self.raw.trim().len() > 0 && self.raw.starts_with("-") {
                 let options: Vec<&str> = self.raw.trim().split("").collect();
@@ -31,11 +41,7 @@ pub mod option {
                 }
                 return cc_options;
             }
-            vec![
-                CcOptionsType::Bytes,
-                CcOptionsType::Lines,
-                CcOptionsType::Words,
-            ]
+            Self::default_options()
         }
     }
 }

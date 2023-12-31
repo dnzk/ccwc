@@ -1,51 +1,26 @@
-mod reports;
-use reports::report::*;
+mod args;
 mod options;
-use options::option::*;
+mod reports;
 mod sources;
+use args::args::CcArgs;
+use reports::report::*;
 use sources::source::*;
 use std::env;
 use std::io::{stderr, stdout, ErrorKind, Write};
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
-    let args: Vec<String> = env::args().collect();
-    let source: CcSource;
-    let empty_path = String::new();
-    if args.len() >= 3 {
-        source = CcSource {
-            source_type: &CcSourceType::File,
-            file_path: &args[2],
-        };
-    } else if args.len() == 1 {
-        source = CcSource {
-            source_type: &CcSourceType::Stdin,
-            file_path: &empty_path,
-        };
-    } else {
-        if args[1].starts_with("-") {
-            source = CcSource {
-                source_type: &CcSourceType::Stdin,
-                file_path: &empty_path,
-            };
-        } else {
-            source = CcSource {
-                source_type: &CcSourceType::File,
-                file_path: &args[1],
-            };
-        }
-    }
+    let args = CcArgs::from(env::args());
+    let source = CcSource::from(args.file_path());
     match source.get_content() {
         Ok(content) => {
             let report = CcReport {
                 content: &content,
-                options: &CcOptions { raw: &args[1] },
+                options: &args.options(),
             };
             return output(&report.count_string(), 0);
         }
-        Err(error) => {
-            return handle_error(error.kind());
-        }
+        Err(error) => return handle_error(error.kind()),
     }
 }
 

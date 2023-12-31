@@ -3,7 +3,7 @@ pub mod report {
 
     pub struct CcReport<'a> {
         pub content: &'a String,
-        pub options: &'a CcOptions<'a>,
+        pub options: &'a CcOptions,
     }
 
     impl<'a> CcReport<'a> {
