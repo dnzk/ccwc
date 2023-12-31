@@ -9,45 +9,36 @@ pub mod args {
     }
 
     impl<'a> CcArgs {
-        fn is_valid_path(file_path: &String) -> bool {
-            Path::new(file_path).exists()
-        }
-
         pub fn from(args: Args) -> CcArgs {
             return CcArgs {
                 raw: args.collect(),
             };
         }
 
-        fn find_file_path(args: &Vec<String>) -> Option<String> {
-            let mut r: Option<String> = None;
+        fn find_by_pattern<T>(args: &Vec<T>, f: fn(&T) -> bool) -> Option<&T> {
+            let mut r: Option<&T> = None;
             for a in args.iter() {
-                if Self::is_valid_path(&a) {
-                    r = Some(a.to_string());
-                }
-            }
-            r
-        }
-
-        fn find_options(args: &Vec<String>) -> Option<String> {
-            let mut r: Option<String> = None;
-            for a in args.iter() {
-                if a.starts_with("-") {
-                    r = Some(a.to_string());
+                if f(a) {
+                    r = Some(a);
                 }
             }
             r
         }
 
         pub fn file_path(&self) -> Option<String> {
-            Self::find_file_path(&self.raw[1..].to_vec())
+            let is_valid_path = |path: &String| -> bool { Path::new(path).is_file() };
+            let path_list = self.raw[1..].to_vec().clone();
+            match Self::find_by_pattern(&path_list, is_valid_path) {
+                Some(path) => Some(path.clone()),
+                _ => None,
+            }
         }
 
         pub fn options(&self) -> CcOptions {
-            let options = Self::find_options(&self.raw);
-            match options {
-                None => return CcOptions::from(String::from("")),
-                Some(options) => return CcOptions::from(options),
+            let is_valid_options = |o: &String| -> bool { o.starts_with("-") };
+            match Self::find_by_pattern(&self.raw, is_valid_options) {
+                None => CcOptions::from(String::from("")),
+                Some(options) => CcOptions::from(options.clone()),
             }
         }
     }
