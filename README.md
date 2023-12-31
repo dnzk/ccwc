@@ -7,12 +7,30 @@ CCWC is an implementation of [this challenge](https://codingchallenges.fyi/chall
 * `-w` to show words count.
 * `-m` to show characters count.
 
+## Usage
+
+Assuming that the compiled binary is already in your path:
+
+Not providing options will show the bytes, lines, and words of the supplied file.
+
+```
+ccwc file_name.txt
+```
+
+Alternatively you can provide the options:
+
+```
+ccwc -lwc file_name.txt
+```
+
+Any permutations work:
+
+```
+ccwc -wl file_name.txt
+```
+
 It shows the report rather differently, but it can be configured in `reports.rs`. It also supports piping:
 
 ```
 cat file_name.txt | ccwc -l
 ```
-
-## Notes
-
-Currently it's dependent on the argument's number and position. This means that when you supply the filename before the options, it will fail.
