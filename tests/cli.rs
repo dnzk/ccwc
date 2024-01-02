@@ -43,3 +43,17 @@ fn shows_clw_by_default() {
         .assert()
         .stdout("158 bytes 6 lines 33 words\n");
 }
+
+#[test]
+fn does_not_duplicate_options() {
+    let mut cmd = Command::cargo_bin("ccwc").unwrap();
+    cmd.arg("./test_files/one.txt")
+        .arg("-lllll")
+        .assert()
+        .stdout("6 lines\n");
+
+    cmd.arg("./test_files/one.txt")
+        .arg("-llwwllcccclll")
+        .assert()
+        .stdout("158 bytes 6 lines 33 words\n");
+}

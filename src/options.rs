@@ -16,8 +16,10 @@ pub mod option {
             match raw {
                 None => Self::default_options(),
                 Some(options) => {
-                    if options.trim().len() > 0 && options.starts_with("-") {
-                        let options: Vec<&str> = options.trim().split("").collect();
+                    if Self::is_valid_options(&options) {
+                        let mut options: Vec<&str> = options.trim().split("").collect();
+                        options.sort();
+                        options.dedup();
                         let mut res: Vec<Self> = vec![];
                         for o in options.iter() {
                             match o.to_lowercase().as_str() {
@@ -37,6 +39,10 @@ pub mod option {
 
         fn default_options() -> Vec<Self> {
             vec![Self::Bytes, Self::Lines, Self::Words]
+        }
+
+        fn is_valid_options(options: &String) -> bool {
+            options.trim().len() > 0 && options.starts_with("-")
         }
     }
 }
