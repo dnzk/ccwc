@@ -16,7 +16,7 @@ pub mod option {
     }
 
     impl<'a> CcOptions {
-        pub fn from(option: String) -> CcOptions {
+        pub fn from(option: String) -> Self {
             CcOptions { raw: option }
         }
         fn default_options() -> Vec<CcOptionsType> {

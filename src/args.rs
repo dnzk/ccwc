@@ -9,10 +9,10 @@ pub mod args {
     }
 
     impl<'a> CcArgs {
-        pub fn from(args: Args) -> CcArgs {
-            return CcArgs {
+        pub fn from(args: Args) -> Self {
+            CcArgs {
                 raw: args.collect(),
-            };
+            }
         }
 
         fn find_by_pattern<T>(args: &Vec<T>, f: fn(&T) -> bool) -> Option<&T> {

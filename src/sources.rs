@@ -13,20 +13,16 @@ pub mod source {
     }
 
     impl<'a> CcSource {
-        pub fn from(file_path: Option<String>) -> CcSource {
+        pub fn from(file_path: Option<String>) -> Self {
             match file_path {
-                None => {
-                    return CcSource {
-                        source_type: CcSourceType::Stdin,
-                        file_path: Box::from(String::from("")),
-                    }
-                }
-                Some(path) => {
-                    return CcSource {
-                        source_type: CcSourceType::File,
-                        file_path: Box::from(path),
-                    }
-                }
+                None => CcSource {
+                    source_type: CcSourceType::Stdin,
+                    file_path: Box::from(String::from("")),
+                },
+                Some(path) => CcSource {
+                    source_type: CcSourceType::File,
+                    file_path: Box::from(path),
+                },
             }
         }
 
