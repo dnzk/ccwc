@@ -14,11 +14,8 @@ fn main() -> ExitCode {
     let source = Source::from(args.file_path());
     match source.get_content() {
         Ok(content) => {
-            let report = CcReport {
-                content: &content,
-                options: &args.options(),
-            };
-            return output(&report.count_string(), 0);
+            let report = Report::from(content);
+            return output(&report.count_string(&args.options()), 0);
         }
         Err(error) => return handle_error(error.kind()),
     }

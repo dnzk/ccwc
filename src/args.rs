@@ -36,11 +36,11 @@ pub mod args {
             }
         }
 
-        pub fn options(&self) -> CcOptions {
+        pub fn options(&self) -> Vec<Options> {
             let is_valid_options = |o: &String| -> bool { o.starts_with("-") };
             match Self::find_by_pattern(&self.raw, is_valid_options) {
-                None => CcOptions::from(String::from("")),
-                Some(options) => CcOptions::from(options.clone()),
+                None => Options::from(None),
+                Some(options) => Options::from(Some(String::from(options.clone()))),
             }
         }
     }
