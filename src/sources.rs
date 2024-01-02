@@ -12,7 +12,7 @@ pub mod source {
         pub file_path: Box<String>,
     }
 
-    impl<'a> CcSource {
+    impl CcSource {
         pub fn from(file_path: Option<String>) -> Self {
             match file_path {
                 None => CcSource {
@@ -25,7 +25,9 @@ pub mod source {
                 },
             }
         }
+    }
 
+    impl<'a> CcSource {
         pub fn get_content(&self) -> Result<String, Error> {
             let file_path = *self.file_path.clone();
             match self.source_type {

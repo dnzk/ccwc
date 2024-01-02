@@ -8,13 +8,15 @@ pub mod args {
         raw: Vec<String>,
     }
 
-    impl<'a> CcArgs {
+    impl CcArgs {
         pub fn from(args: Args) -> Self {
             CcArgs {
                 raw: args.collect(),
             }
         }
+    }
 
+    impl<'a> CcArgs {
         fn find_by_pattern<T>(args: &Vec<T>, f: fn(&T) -> bool) -> Option<&T> {
             let mut r: Option<&T> = None;
             for a in args.iter() {

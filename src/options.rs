@@ -15,10 +15,11 @@ pub mod option {
         raw: String,
     }
 
-    impl<'a> CcOptions {
+    impl CcOptions {
         pub fn from(option: String) -> Self {
             CcOptions { raw: option }
         }
+
         fn default_options() -> Vec<CcOptionsType> {
             vec![
                 CcOptionsType::Bytes,
@@ -26,6 +27,9 @@ pub mod option {
                 CcOptionsType::Words,
             ]
         }
+    }
+
+    impl<'a> CcOptions {
         pub fn encode(&self) -> Vec<CcOptionsType> {
             if self.raw.trim().len() > 0 && self.raw.starts_with("-") {
                 let options: Vec<&str> = self.raw.trim().split("").collect();
