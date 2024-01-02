@@ -11,7 +11,7 @@ use std::process::ExitCode;
 
 fn main() -> ExitCode {
     let args = CcArgs::from(env::args());
-    let source = CcSource::from(args.file_path());
+    let source = Source::from(args.file_path());
     match source.get_content() {
         Ok(content) => {
             let report = CcReport {
