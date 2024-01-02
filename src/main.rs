@@ -6,18 +6,23 @@ use args::args::CcArgs;
 use reports::report::*;
 use sources::source::*;
 use std::env;
-use std::io::{stderr, stdout, ErrorKind, Write};
+use std::io::ErrorKind;
 use std::process::ExitCode;
 
 fn main() -> ExitCode {
     let args = CcArgs::from(env::args());
-    let source = Source::from(args.file_path());
-    match source.get_content() {
-        Ok(content) => {
-            let report = Report::from(content);
-            return output(&report.count_string(&args.options()), 0);
+    match args.file_path() {
+        Ok(file_path) => {
+            let source = Source::from(file_path);
+            match source.get_content() {
+                Ok(content) => {
+                    let report = Report::from(content);
+                    output(report.count_string(&args.options()), 0)
+                }
+                Err(error) => handle_error(error.kind()),
+            }
         }
-        Err(error) => return handle_error(error.kind()),
+        Err(error) => handle_error(error.kind()),
     }
 }
 
@@ -27,24 +32,14 @@ fn handle_error(error: ErrorKind) -> ExitCode {
         ErrorKind::PermissionDenied => "Insufficient access to file",
         _ => "Fatal error",
     };
-    return output(msg, 1);
+    output(msg.to_string(), 1)
 }
 
-fn output(msg: &str, status: u8) -> ExitCode {
+fn output(msg: String, status: u8) -> ExitCode {
     if status == 0 {
-        write_to_stdout(msg);
+        println!("{}", msg);
     } else {
-        write_to_stderr(msg);
+        eprintln!("{}", msg);
     }
-    return ExitCode::from(status);
-}
-
-fn write_to_stdout(msg: &str) {
-    let mut lock = stdout().lock();
-    writeln!(lock, "{}", msg).expect("Fatal error");
-}
-
-fn write_to_stderr(msg: &str) {
-    let mut lock = stderr().lock();
-    writeln!(lock, "{}", msg).expect("Fatal error");
+    ExitCode::from(status)
 }

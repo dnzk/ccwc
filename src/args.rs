@@ -2,6 +2,7 @@ pub mod args {
     use super::super::options::option::*;
     use std::convert::*;
     use std::env::Args;
+    use std::io::{Error, ErrorKind};
     use std::path::Path;
 
     pub struct CcArgs {
@@ -27,12 +28,12 @@ pub mod args {
             r
         }
 
-        pub fn file_path(&self) -> Option<String> {
+        pub fn file_path(&self) -> Result<Option<String>, Error> {
             let is_valid_path = |path: &String| -> bool { Path::new(path).is_file() };
             let path_list = self.raw[1..].to_vec().clone();
             match Self::find_by_pattern(&path_list, is_valid_path) {
-                Some(path) => Some(path.clone()),
-                _ => None,
+                Some(path) => Ok(Some(path.clone())),
+                _ => Err(Error::new(ErrorKind::NotFound, "File not found")),
             }
         }
 
