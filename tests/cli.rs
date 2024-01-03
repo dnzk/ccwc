@@ -57,3 +57,11 @@ fn does_not_duplicate_options() {
         .assert()
         .stdout("158 bytes 6 lines 33 words\n");
 }
+
+#[test]
+fn errors_when_file_not_found() {
+    let mut cmd = Command::cargo_bin("ccwc").unwrap();
+    cmd.arg("./test_files/doesnt_exist.txt")
+        .assert()
+        .stderr("File not found\n");
+}

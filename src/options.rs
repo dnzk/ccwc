@@ -27,7 +27,7 @@ pub mod option {
                                 L => res.push(Self::Lines),
                                 M => res.push(Self::Characters),
                                 W => res.push(Self::Words),
-                                _ => {}
+                                _ => (),
                             }
                         }
                         return res;
