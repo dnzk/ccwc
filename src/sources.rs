@@ -32,8 +32,13 @@ pub mod source {
             let stdin = std::io::stdin();
             let mut content = String::new();
             for line in stdin.lock().lines() {
-                content.push_str(line.unwrap().as_str());
-                content.push('\n');
+                match line {
+                    Ok(l) => {
+                        content.push_str(l.as_str());
+                        content.push('\n');
+                    }
+                    _ => (),
+                }
             }
             Ok(content)
         }

@@ -65,3 +65,12 @@ fn errors_when_file_not_found() {
         .assert()
         .stderr("File not found\n");
 }
+
+#[test]
+fn supports_piping() {
+    Command::new("./target/debug/ccwc")
+        .pipe_stdin("./test_files/one.txt")
+        .unwrap()
+        .assert()
+        .stdout("158 bytes 6 lines 33 words\n");
+}

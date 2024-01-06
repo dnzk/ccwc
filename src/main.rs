@@ -11,16 +11,11 @@ use std::process::ExitCode;
 
 fn main() -> ExitCode {
     let args = CcArgs::from(env::args());
-    match args.file_path() {
-        Ok(file_path) => {
-            let source = Source::from(file_path);
-            match source.get_content() {
-                Ok(content) => {
-                    let report = Report::from(content);
-                    output(report.count_string(&args.options()), 0)
-                }
-                Err(error) => handle_error(error.kind()),
-            }
+    let source = Source::from(args.possible_file_path());
+    match source.get_content() {
+        Ok(content) => {
+            let report = Report::from(content);
+            output(report.count_string(&args.options()), 0)
         }
         Err(error) => handle_error(error.kind()),
     }
@@ -30,7 +25,8 @@ fn handle_error(error: ErrorKind) -> ExitCode {
     let msg = match error {
         ErrorKind::NotFound => "File not found",
         ErrorKind::PermissionDenied => "Insufficient access to file",
-        _ => "Fatal error",
+        ErrorKind::InvalidInput => "Invalid input",
+        _ => panic!("Fatal Error"),
     };
     output(msg.to_string(), 1)
 }
