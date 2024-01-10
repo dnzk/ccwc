@@ -12,7 +12,7 @@ pub mod report {
     }
 
     impl Report {
-        pub fn count(&self, options: &Vec<Options>) -> Vec<(usize, Options)> {
+        pub fn count(&self, options: &[Options]) -> Vec<(usize, Options)> {
             let mut result: Vec<(usize, Options)> = vec![];
             for option in options.iter() {
                 match option {
@@ -29,7 +29,7 @@ pub mod report {
             result
         }
 
-        pub fn count_string(&self, options: &Vec<Options>) -> String {
+        pub fn count_string(&self, options: &[Options]) -> String {
             let mut result: Vec<String> = vec![];
             for c in self.count(options).iter() {
                 match c.1 {

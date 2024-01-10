@@ -2,7 +2,7 @@ mod args;
 mod options;
 mod reports;
 mod sources;
-use args::args::CcArgs;
+use args::arg::CcArgs;
 use reports::report::*;
 use sources::source::*;
 use std::env;

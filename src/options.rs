@@ -42,8 +42,8 @@ pub mod option {
             vec![Self::Bytes, Self::Lines, Self::Words]
         }
 
-        fn is_valid_options(options: &String) -> bool {
-            options.trim().len() > 0 && options.starts_with("-")
+        fn is_valid_options(options: &str) -> bool {
+            !options.trim().is_empty() && options.starts_with('-')
         }
     }
 }

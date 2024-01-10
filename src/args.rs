@@ -1,6 +1,5 @@
-pub mod args {
+pub mod arg {
     use crate::options::option::*;
-    use std::convert::*;
     use std::env::Args;
 
     pub struct CcArgs {
@@ -15,8 +14,8 @@ pub mod args {
         }
     }
 
-    impl<'a> CcArgs {
-        fn find_by_pattern<T>(args: &Vec<T>, f: fn(&T) -> bool) -> Option<&T> {
+    impl CcArgs {
+        fn find_by_pattern<T>(args: &[T], f: fn(&T) -> bool) -> Option<&T> {
             let mut r: Option<&T> = None;
             for a in args.iter() {
                 if f(a) {
@@ -37,10 +36,10 @@ pub mod args {
         }
 
         pub fn options(&self) -> Vec<Options> {
-            let is_valid_options = |o: &String| -> bool { o.starts_with("-") };
+            let is_valid_options = |o: &String| -> bool { o.starts_with('-') };
             match Self::find_by_pattern(&self.raw, is_valid_options) {
                 None => Options::from(None),
-                Some(options) => Options::from(Some(String::from(options.clone()))),
+                Some(options) => Options::from(Some(options.clone())),
             }
         }
     }

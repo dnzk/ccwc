@@ -19,14 +19,9 @@ pub mod source {
         fn read_from_stdin() -> Result<String, Error> {
             let stdin = std::io::stdin();
             let mut content = String::new();
-            for line in stdin.lock().lines() {
-                match line {
-                    Ok(l) => {
-                        content.push_str(l.as_str());
-                        content.push('\n');
-                    }
-                    _ => (),
-                }
+            for line in stdin.lock().lines().flatten() {
+                content.push_str(line.as_str());
+                content.push('\n');
             }
             Ok(content)
         }
