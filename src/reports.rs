@@ -1,5 +1,5 @@
 pub mod report {
-    use super::super::options::option::Options;
+    use crate::options::option::*;
 
     pub struct Report {
         content: String,
