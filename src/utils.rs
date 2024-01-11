@@ -27,7 +27,7 @@ mod test {
     use super::helpers::handle_error;
 
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "Fatal Error")]
     fn unknown_error_kind() {
         handle_error(std::io::ErrorKind::AddrInUse);
     }
