@@ -2,12 +2,13 @@ mod args;
 mod options;
 mod reports;
 mod sources;
+mod utils;
 use args::arg::CcArgs;
 use reports::report::*;
 use sources::source::*;
 use std::env;
-use std::io::ErrorKind;
 use std::process::ExitCode;
+use utils::helpers::{handle_error, output};
 
 fn main() -> ExitCode {
     let args = CcArgs::from(env::args());
@@ -19,23 +20,4 @@ fn main() -> ExitCode {
         }
         Err(error) => handle_error(error.kind()),
     }
-}
-
-fn handle_error(error: ErrorKind) -> ExitCode {
-    let msg = match error {
-        ErrorKind::NotFound => "File not found",
-        ErrorKind::PermissionDenied => "Insufficient access to file",
-        ErrorKind::InvalidInput => "Invalid input",
-        _ => panic!("Fatal Error"),
-    };
-    output(msg.to_string(), 1)
-}
-
-fn output(msg: String, status: u8) -> ExitCode {
-    if status == 0 {
-        println!("{}", msg);
-    } else {
-        eprintln!("{}", msg);
-    }
-    ExitCode::from(status)
 }
