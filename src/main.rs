@@ -1,14 +1,6 @@
-mod args;
-mod options;
-mod reports;
-mod sources;
-mod utils;
-use args::arg::CcArgs;
-use reports::report::*;
-use sources::source::*;
+use ccwc::{handle_error, output, CcArgs, Report, Source};
 use std::env;
 use std::process::ExitCode;
-use utils::helpers::{handle_error, output};
 
 fn main() -> ExitCode {
     let args = CcArgs::from(env::args());

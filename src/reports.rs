@@ -1,45 +1,43 @@
-pub mod report {
-    use crate::options::option::*;
+use crate::options::Options;
 
-    pub struct Report {
-        content: String,
+pub struct Report {
+    content: String,
+}
+
+impl Report {
+    pub fn from(content: String) -> Self {
+        Self { content }
     }
+}
 
-    impl Report {
-        pub fn from(content: String) -> Self {
-            Self { content }
-        }
-    }
-
-    impl Report {
-        pub fn count(&self, options: &[Options]) -> Vec<(usize, Options)> {
-            let mut result: Vec<(usize, Options)> = vec![];
-            for option in options.iter() {
-                match option {
-                    Options::Bytes => result.push((self.content.len(), Options::Bytes)),
-                    Options::Characters => {
-                        result.push((self.content.chars().count(), Options::Characters))
-                    }
-                    Options::Lines => result.push((self.content.lines().count(), Options::Lines)),
-                    Options::Words => {
-                        result.push((self.content.split_whitespace().count(), Options::Words))
-                    }
+impl Report {
+    pub fn count(&self, options: &[Options]) -> Vec<(usize, Options)> {
+        let mut result: Vec<(usize, Options)> = vec![];
+        for option in options.iter() {
+            match option {
+                Options::Bytes => result.push((self.content.len(), Options::Bytes)),
+                Options::Characters => {
+                    result.push((self.content.chars().count(), Options::Characters))
+                }
+                Options::Lines => result.push((self.content.lines().count(), Options::Lines)),
+                Options::Words => {
+                    result.push((self.content.split_whitespace().count(), Options::Words))
                 }
             }
-            result
         }
+        result
+    }
 
-        pub fn count_string(&self, options: &[Options]) -> String {
-            let mut result: Vec<String> = vec![];
-            for c in self.count(options).iter() {
-                match c.1 {
-                    Options::Bytes => result.push(format!("{} bytes", c.0)),
-                    Options::Characters => result.push(format!("{} characters", c.0)),
-                    Options::Lines => result.push(format!("{} lines", c.0)),
-                    Options::Words => result.push(format!("{} words", c.0)),
-                }
+    pub fn count_string(&self, options: &[Options]) -> String {
+        let mut result: Vec<String> = vec![];
+        for c in self.count(options).iter() {
+            match c.1 {
+                Options::Bytes => result.push(format!("{} bytes", c.0)),
+                Options::Characters => result.push(format!("{} characters", c.0)),
+                Options::Lines => result.push(format!("{} lines", c.0)),
+                Options::Words => result.push(format!("{} words", c.0)),
             }
-            result.join(" ")
         }
+        result.join(" ")
     }
 }
