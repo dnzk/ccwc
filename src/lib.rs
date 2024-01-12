@@ -1,10 +1,6 @@
-mod args;
-mod options;
-mod reports;
-mod sources;
-mod utils;
-pub use args::*;
-pub use options::*;
-pub use reports::*;
-pub use sources::*;
-pub use utils::helpers::*;
+mod ccwc_lib;
+pub use ccwc_lib::args::*;
+pub use ccwc_lib::options::*;
+pub use ccwc_lib::reports::*;
+pub use ccwc_lib::sources::*;
+pub use ccwc_lib::utils::*;

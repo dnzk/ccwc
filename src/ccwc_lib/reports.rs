@@ -1,4 +1,4 @@
-use crate::options::Options;
+use crate::ccwc_lib::options::Options;
 
 pub struct Report {
     content: String,

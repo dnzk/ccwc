@@ -1,19 +1,19 @@
-use crate::options::Options;
+use crate::ccwc_lib::options::Options;
 use std::env::Args;
 
-pub struct CcArgs {
+pub struct Config {
     raw: Vec<String>,
 }
 
-impl CcArgs {
+impl Config {
     pub fn from(args: Args) -> Self {
-        CcArgs {
+        Config {
             raw: args.collect(),
         }
     }
 }
 
-impl CcArgs {
+impl Config {
     fn find_by_pattern<T>(args: &[T], f: fn(&T) -> bool) -> Option<&T> {
         let mut r: Option<&T> = None;
         for a in args.iter() {
