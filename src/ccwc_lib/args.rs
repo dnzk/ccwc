@@ -25,19 +25,19 @@ impl Config {
     }
 
     pub fn possible_file_path(&self) -> Option<String> {
-        let maybe_file_path = |path: &String| -> bool { path.contains(std::path::MAIN_SEPARATOR) };
         let path_list = self.raw[1..].to_vec().clone();
-        if let Some(path) = Self::find_by_pattern(&path_list, maybe_file_path) {
+        if let Some(path) = Self::find_by_pattern(&path_list, |p: &String| {
+            p.contains(std::path::MAIN_SEPARATOR)
+        }) {
             return Some(path.clone());
         }
         None
     }
 
     pub fn options(&self) -> Vec<Options> {
-        let is_valid_options = |o: &String| -> bool { o.starts_with('-') };
-        match Self::find_by_pattern(&self.raw, is_valid_options) {
-            None => Options::from(None),
-            Some(options) => Options::from(Some(options.clone())),
+        if let Some(options) = Self::find_by_pattern(&self.raw, |o: &String| o.starts_with('-')) {
+            return Options::from(Some(options.clone()));
         }
+        Options::from(None)
     }
 }
